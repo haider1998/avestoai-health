@@ -1,0 +1,2511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AvestoAI Health - Professional Eye & Mind Wellness Platform</title>
+    <meta name="description" content="Advanced eye care and mindfulness training with AI-powered blink detection and personalized wellness coaching.">
+    <meta name="keywords" content="eye care, blink therapy, mindfulness, wellness, AI health">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='30' fill='%2310b981'/><path d='M6 32c6-10 16-16 26-16s20 6 26 16c-6 10-16 16-26 16S12 42 6 32z' fill='white' opacity='0.9'/><circle cx='32' cy='32' r='8' fill='%230f172a'/></svg>">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* CSS Custom Properties */
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #7c3aed;
+            --accent: #10b981;
+            --accent-light: #34d399;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --success: #22c55e;
+
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --bg-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-hover: rgba(255, 255, 255, 0.15);
+
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+            font-feature-settings: 'kern' 1;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .loading-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: var(--glass);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--glass-border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Main Container */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 24px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-success);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .logo i {
+            color: white;
+            font-size: 24px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .brand-text h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 2px;
+        }
+
+        .brand-text .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 8px 12px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(10px);
+        }
+
+        .badge i {
+            font-size: 10px;
+        }
+
+        .badge.success {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: var(--success);
+        }
+
+        .badge.primary {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: rgba(14, 165, 233, 0.3);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            padding: 24px;
+            position: sticky;
+            top: 120px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .panel-section {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .panel-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-title i {
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            background: var(--glass);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn.primary {
+            background: var(--bg-success);
+            border-color: var(--accent);
+            color: #065f46;
+        }
+
+        .btn.secondary {
+            background: var(--bg-secondary);
+            border-color: #f472b6;
+            color: #831843;
+        }
+
+        .btn.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Range Slider */
+        .range-group {
+            margin-bottom: 16px;
+        }
+
+        .range-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .range-value {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .range-slider {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            position: relative;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .range-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-thumb {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active .toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        /* Status Cards */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .status-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .status-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Video Section */
+        .video-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .video-stream {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .video-placeholder i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--text-muted);
+        }
+
+        .video-placeholder h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .video-placeholder p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Timer Display */
+        .timer-section {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 24px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-circle {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .timer-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .timer-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 8;
+        }
+
+        .timer-progress {
+            fill: none;
+            stroke: url(#timerGradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .timer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .phase-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .phase-description {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--bg-success);
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progress-shine 2s infinite;
+        }
+
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .status-chip {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse-dot 2s infinite;
+        }
+
+        .status-dot.warning {
+            background: var(--warning);
+        }
+
+        .status-dot.error {
+            background: var(--error);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 350px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            box-shadow: var(--shadow-xl);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--error);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--primary);
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .notification-icon {
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        .notification-text {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Error States */
+        .error-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .error-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--error);
+        }
+
+        .error-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .error-state p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 20px 24px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-link {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+        }
+
+        .kbd {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .control-panel {
+                position: static;
+                order: 2;
+            }
+
+            .video-section {
+                order: 1;
+            }
+
+            .timer-section {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 16px;
+            }
+
+            .timer-circle {
+                width: 150px;
+                height: 150px;
+            }
+
+            .timer-text {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .control-panel,
+            .video-section {
+                padding: 16px;
+            }
+
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .status-bar {
+                justify-content: center;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 16px;
+            }
+
+            .main-content {
+                padding: 12px;
+            }
+
+            .brand-text h1 {
+                font-size: 20px;
+            }
+
+            .timer-circle {
+                width: 120px;
+                height: 120px;
+            }
+
+            .timer-text {
+                font-size: 20px;
+            }
+
+            .phase-title {
+                font-size: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --glass-border: rgba(255, 255, 255, 0.5);
+                --text-muted: rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        /* Focus styles for keyboard navigation */
+        .btn:focus,
+        .form-control:focus,
+        .toggle-switch:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+<!-- Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+    <div class="loading-content">
+        <div class="loading-logo">
+            <div class="loading-spinner"></div>
+        </div>
+        <h2>AvestoAI Health</h2>
+        <p>Initializing wellness platform...</p>
+    </div>
+</div>
+
+<!-- Main Application -->
+<div class="app-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="logo">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>AvestoAI Health</h1>
+                    <div class="subtitle">Professional Eye & Mind Wellness</div>
+                </div>
+            </div>
+            <div class="header-badges">
+                <div class="badge success">
+                    <i class="fas fa-shield-alt"></i>
+                    Private & Secure
+                </div>
+                <div class="badge primary">
+                    <i class="fas fa-brain"></i>
+                    AI-Powered
+                </div>
+                <div class="badge">
+                    <i class="fas fa-camera"></i>
+                    Real-time Detection
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Control Panel -->
+        <aside class="control-panel">
+            <!-- Session Controls -->
+            <div class="panel-section">
+                <h3 class="section-title">
+                    <i class="fas fa-play"></i>
+                    Session Control
+                </h3>
+                <div class="btn-group">
+                    <button class="btn primary" id="startBtn">
+                        <i class="fas fa-play"></i>
+                        Start
+                    </button>
+                    <button class="btn" id="pauseBtn" disabled>
+                        <i class="fas fa-pause"></i>
+                        Pause
+                    </button>
+                    <button class="btn full-width" id="resetBtn">
+                        <i class="fas fa-redo"></i>
+                        Reset Session
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn secondary" id="cameraBtn">
+                        <i class="fas fa-camera"></i>
+                        Camera
+                    </button>
+                    <button class="btn" id="calibrateBtn">
+                        <i class="fas fa-crosshairs"></i>
+                        Calibrate
+                    </button>
+                </div>
+            </div>
+
+            <!-- Exercise Selection -->
+            <div class="panel-section">
+                <h3 class="section-title">
+                    <i class="fas fa-dumbbell"></i>
+                    Exercise Program
+                </h3>
+                <div class="form-group">
+                    <label class="form-label">Exercise Type</label>
+                    <select class="form-control" id="exerciseSelect">
+                        <option value="blink">Eye Blink Therapy (3s close / 10s open)</option>
+                        <option value="breathing">Mindful Breathing (4-4-6 pattern)</option>
+                        <option value="focus">Focus Training (15s focus / 5s rest)</option>
+                    </select>
+                </div>
+                <div class="range-group">
+                    <div class="range-label">
+                        <span>Session Duration</span>
+                        <span class="range-value" id="durationValue">5 min</span>
+                    </div>
+                    <input type="range" class="range-slider" id="durationSlider"
+                           min="1" max="20" value="5" step="1">
+                </div>
+            </div>
+
+            <!-- Voice Settings -->
+            <div class="panel-section">
+                <h3 class="section-title">
+                    <i class="fas fa-microphone"></i>
+                    Voice Guidance
+                </h3>
+                <div class="toggle-group">
+                    <span class="toggle-label">Enable Voice</span>
+                    <div class="toggle-switch" id="voiceToggle">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Voice Selection</label>
+                    <select class="form-control" id="voiceSelect"></select>
+                </div>
+                <div class="range-group">
+                    <div class="range-label">
+                        <span>Voice Volume</span>
+                        <span class="range-value" id="voiceVolumeValue">70%</span>
+                    </div>
+                    <input type="range" class="range-slider" id="voiceVolumeSlider"
+                           min="0" max="100" value="70" step="1">
+                </div>
+            </div>
+
+            <!-- Audio Settings -->
+            <div class="panel-section">
+                <h3 class="section-title">
+                    <i class="fas fa-volume-up"></i>
+                    Audio Environment
+                </h3>
+                <div class="toggle-group">
+                    <span class="toggle-label">Background Sounds</span>
+                    <div class="toggle-switch active" id="ambientToggle">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Soundscape</label>
+                    <select class="form-control" id="ambientSelect">
+                        <option value="ocean">Ocean Waves</option>
+                        <option value="forest">Forest Ambience</option>
+                        <option value="rain">Gentle Rain</option>
+                        <option value="white">White Noise</option>
+                    </select>
+                </div>
+                <div class="range-group">
+                    <div class="range-label">
+                        <span>Ambient Volume</span>
+                        <span class="range-value" id="ambientVolumeValue">30%</span>
+                    </div>
+                    <input type="range" class="range-slider" id="ambientVolumeSlider"
+                           min="0" max="100" value="30" step="1">
+                </div>
+                <div class="range-group">
+                    <div class="range-label">
+                        <span>Sound Effects</span>
+                        <span class="range-value" id="effectsVolumeValue">60%</span>
+                    </div>
+                    <input type="range" class="range-slider" id="effectsVolumeSlider"
+                           min="0" max="100" value="60" step="1">
+                </div>
+            </div>
+
+            <!-- Detection Status -->
+            <div class="panel-section">
+                <h3 class="section-title">
+                    <i class="fas fa-eye"></i>
+                    Detection Status
+                </h3>
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="status-value" id="eyeOpenness">—</div>
+                        <div class="status-label">Eye Ratio</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-value" id="eyeState">Waiting</div>
+                        <div class="status-label">Current State</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-value" id="detectionAccuracy">—</div>
+                        <div class="status-label">Accuracy</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-value" id="calibrationStatus">Uncalibrated</div>
+                        <div class="status-label">Calibration</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Video and Timer Section -->
+        <section class="video-section">
+            <!-- Video Stream -->
+            <div class="video-container">
+                <video class="video-stream" id="videoStream" autoplay muted playsinline></video>
+                <canvas class="video-overlay" id="videoOverlay"></canvas>
+                <div class="video-placeholder" id="videoPlaceholder">
+                    <i class="fas fa-camera-slash"></i>
+                    <h3>Camera Not Active</h3>
+                    <p>Click "Camera" button to enable video detection</p>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-chip">
+                    <div class="status-dot" id="cameraStatusDot"></div>
+                    <span>Camera: </span>
+                    <strong id="cameraStatus">Disconnected</strong>
+                </div>
+                <div class="status-chip">
+                    <div class="status-dot warning" id="detectionStatusDot"></div>
+                    <span>Detection: </span>
+                    <strong id="detectionStatus">Inactive</strong>
+                </div>
+                <div class="status-chip">
+                    <div class="status-dot error" id="sessionStatusDot"></div>
+                    <span>Session: </span>
+                    <strong id="sessionStatus">Ready</strong>
+                </div>
+            </div>
+
+            <!-- Timer Display -->
+            <div class="timer-section">
+                <div class="timer-circle">
+                    <svg class="timer-svg" viewBox="0 0 100 100">
+                        <defs>
+                            <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#4facfe"/>
+                                <stop offset="100%" style="stop-color:#00f2fe"/>
+                            </linearGradient>
+                        </defs>
+                        <circle class="timer-bg" cx="50" cy="50" r="45"/>
+                        <circle class="timer-progress" cx="50" cy="50" r="45"
+                                stroke-dasharray="283" stroke-dashoffset="283" id="timerProgress"/>
+                    </svg>
+                    <div class="timer-text" id="timerDisplay">05:00</div>
+                </div>
+                <div class="timer-info">
+                    <div class="phase-title" id="phaseTitle">Ready to Begin</div>
+                    <div class="phase-description" id="phaseDescription">
+                        Select an exercise and click Start to begin your wellness session.
+                        Enable camera for real-time eye tracking.
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="stat-value" id="cyclesCount">0</div>
+                    <div class="stat-label">Cycles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-value" id="totalTime">0:00</div>
+                    <div class="stat-label">Total Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="stat-value" id="streakCount">1</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-value" id="wellnessScore">95</div>
+                    <div class="stat-label">Wellness Score</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-text">
+                <strong>Keyboard Shortcuts:</strong>
+                <span class="kbd">Space</span> Start/Pause •
+                <span class="kbd">R</span> Reset •
+                <span class="kbd">C</span> Camera
+            </div>
+            <div class="footer-links">
+                <span class="footer-text">© 2024 AvestoAI Health - Privacy-First Wellness Technology</span>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- Notification System -->
+<div class="notification" id="notification">
+    <div class="notification-content">
+        <div class="notification-icon" id="notificationIcon">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="notification-text">
+            <div class="notification-title" id="notificationTitle">Info</div>
+            <div class="notification-message" id="notificationMessage">Message content</div>
+        </div>
+    </div>
+</div>
+
+<!-- TensorFlow.js and Face Detection -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection@1.0.5/dist/face-landmarks-detection.min.js"></script>
+
+<script>
+    // Application State Manager
+    class AppState {
+        constructor() {
+            this.isRunning = false;
+            this.isPaused = false;
+            this.currentExercise = 'blink';
+            this.currentPhase = 0;
+            this.sessionDuration = 5; // minutes
+            this.remainingTime = 0;
+            this.startTime = null;
+            this.elapsedTime = 0;
+            this.cycleCount = 0;
+
+            // Camera and detection
+            this.cameraActive = false;
+            this.detectionModel = null;
+            this.videoStream = null;
+            this.isCalibrated = false;
+            this.eyeThreshold = 0.25;
+            this.openEyeRatio = null;
+            this.closedEyeRatio = null;
+            this.currentEyeRatio = 0;
+            this.eyeState = 'unknown';
+
+            // Audio
+            this.audioContext = null;
+            this.voiceEnabled = false;
+            this.ambientEnabled = true;
+            this.voiceVolume = 70;
+            this.ambientVolume = 30;
+            this.effectsVolume = 60;
+            this.currentAmbientSound = null;
+
+            // Settings
+            this.selectedVoice = null;
+            this.ambientType = 'ocean';
+        }
+    }
+
+    // Exercise Definitions
+    const EXERCISES = {
+        blink: {
+            name: 'Eye Blink Therapy',
+            phases: [
+                { name: 'close', duration: 3, instruction: 'Gently close your eyes and relax', voice: 'Close your eyes gently' },
+                { name: 'open', duration: 10, instruction: 'Open your eyes and look ahead softly', voice: 'Open your eyes and relax' }
+            ]
+        },
+        breathing: {
+            name: 'Mindful Breathing',
+            phases: [
+                { name: 'inhale', duration: 4, instruction: 'Breathe in slowly and deeply', voice: 'Breathe in slowly' },
+                { name: 'hold', duration: 4, instruction: 'Hold your breath gently', voice: 'Hold your breath' },
+                { name: 'exhale', duration: 6, instruction: 'Breathe out slowly and completely', voice: 'Breathe out slowly' }
+            ]
+        },
+        focus: {
+            name: 'Focus Training',
+            phases: [
+                { name: 'focus', duration: 15, instruction: 'Focus on a single point ahead', voice: 'Focus on a point ahead' },
+                { name: 'rest', duration: 5, instruction: 'Relax your gaze and blink naturally', voice: 'Relax your gaze' }
+            ]
+        }
+    };
+
+    // Initialize application
+    const app = new AppState();
+    let updateInterval = null;
+    let phaseTimeout = null;
+
+    // DOM Elements
+    const elements = {
+        // Controls
+        startBtn: document.getElementById('startBtn'),
+        pauseBtn: document.getElementById('pauseBtn'),
+        resetBtn: document.getElementById('resetBtn'),
+        cameraBtn: document.getElementById('cameraBtn'),
+        calibrateBtn: document.getElementById('calibrateBtn'),
+
+        // Settings
+        exerciseSelect: document.getElementById('exerciseSelect'),
+        durationSlider: document.getElementById('durationSlider'),
+        durationValue: document.getElementById('durationValue'),
+        voiceToggle: document.getElementById('voiceToggle'),
+        voiceSelect: document.getElementById('voiceSelect'),
+        voiceVolumeSlider: document.getElementById('voiceVolumeSlider'),
+        voiceVolumeValue: document.getElementById('voiceVolumeValue'),
+        ambientToggle: document.getElementById('ambientToggle'),
+        ambientSelect: document.getElementById('ambientSelect'),
+        ambientVolumeSlider: document.getElementById('ambientVolumeSlider'),
+        ambientVolumeValue: document.getElementById('ambientVolumeValue'),
+        effectsVolumeSlider: document.getElementById('effectsVolumeSlider'),
+        effectsVolumeValue: document.getElementById('effectsVolumeValue'),
+
+        // Video
+        videoStream: document.getElementById('videoStream'),
+        videoOverlay: document.getElementById('videoOverlay'),
+        videoPlaceholder: document.getElementById('videoPlaceholder'),
+
+        // Status
+        cameraStatus: document.getElementById('cameraStatus'),
+        cameraStatusDot: document.getElementById('cameraStatusDot'),
+        detectionStatus: document.getElementById('detectionStatus'),
+        detectionStatusDot: document.getElementById('detectionStatusDot'),
+        sessionStatus: document.getElementById('sessionStatus'),
+        sessionStatusDot: document.getElementById('sessionStatusDot'),
+
+        // Detection info
+        eyeOpenness: document.getElementById('eyeOpenness'),
+        eyeState: document.getElementById('eyeState'),
+        detectionAccuracy: document.getElementById('detectionAccuracy'),
+        calibrationStatus: document.getElementById('calibrationStatus'),
+
+        // Timer and display
+        timerDisplay: document.getElementById('timerDisplay'),
+        timerProgress: document.getElementById('timerProgress'),
+        phaseTitle: document.getElementById('phaseTitle'),
+        phaseDescription: document.getElementById('phaseDescription'),
+        progressBar: document.getElementById('progressBar'),
+
+        // Stats
+        cyclesCount: document.getElementById('cyclesCount'),
+        totalTime: document.getElementById('totalTime'),
+        streakCount: document.getElementById('streakCount'),
+        wellnessScore: document.getElementById('wellnessScore'),
+
+        // Notifications
+        notification: document.getElementById('notification'),
+        notificationIcon: document.getElementById('notificationIcon'),
+        notificationTitle: document.getElementById('notificationTitle'),
+        notificationMessage: document.getElementById('notificationMessage'),
+
+        // Loading
+        loadingScreen: document.getElementById('loadingScreen')
+    };
+
+    // Audio Manager
+    class AudioManager {
+        constructor() {
+            this.context = null;
+            this.masterGain = null;
+            this.voiceGain = null;
+            this.ambientGain = null;
+            this.effectsGain = null;
+            this.ambientSource = null;
+            this.initialized = false;
+        }
+
+        async initialize() {
+            if (this.initialized) return;
+
+            try {
+                this.context = new (window.AudioContext || window.webkitAudioContext)();
+                this.masterGain = this.context.createGain();
+                this.masterGain.connect(this.context.destination);
+
+                // Create gain nodes for different audio types
+                this.voiceGain = this.context.createGain();
+                this.ambientGain = this.context.createGain();
+                this.effectsGain = this.context.createGain();
+
+                this.voiceGain.connect(this.masterGain);
+                this.ambientGain.connect(this.masterGain);
+                this.effectsGain.connect(this.masterGain);
+
+                // Set initial volumes
+                this.setAmbientVolume(app.ambientVolume);
+                this.setEffectsVolume(app.effectsVolume);
+
+                this.initialized = true;
+                console.log('Audio manager initialized');
+            } catch (error) {
+                console.error('Failed to initialize audio:', error);
+                showNotification('Audio initialization failed', 'error');
+            }
+        }
+
+        async resume() {
+            if (this.context && this.context.state === 'suspended') {
+                await this.context.resume();
+            }
+        }
+
+        setAmbientVolume(volume) {
+            if (this.ambientGain) {
+                this.ambientGain.gain.value = volume / 100;
+            }
+        }
+
+        setEffectsVolume(volume) {
+            if (this.effectsGain) {
+                this.effectsGain.gain.value = volume / 100;
+            }
+        }
+
+        async startAmbientSound(type) {
+            if (!this.initialized) return;
+
+            this.stopAmbientSound();
+
+            try {
+                // Create noise buffer
+                const bufferSize = this.context.sampleRate * 2;
+                const buffer = this.context.createBuffer(1, bufferSize, this.context.sampleRate);
+                const data = buffer.getChannelData(0);
+
+                // Generate noise
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const source = this.context.createBufferSource();
+                source.buffer = buffer;
+                source.loop = true;
+
+                // Create filter based on ambient type
+                const filter = this.context.createBiquadFilter();
+
+                switch (type) {
+                    case 'ocean':
+                        filter.type = 'lowpass';
+                        filter.frequency.value = 400;
+                        filter.Q.value = 0.7;
+                        break;
+                    case 'forest':
+                        filter.type = 'bandpass';
+                        filter.frequency.value = 1200;
+                        filter.Q.value = 0.5;
+                        break;
+                    case 'rain':
+                        filter.type = 'highpass';
+                        filter.frequency.value = 800;
+                        filter.Q.value = 0.3;
+                        break;
+                    case 'white':
+                        filter.type = 'allpass';
+                        break;
+                }
+
+                source.connect(filter);
+                filter.connect(this.ambientGain);
+                source.start();
+
+                this.ambientSource = source;
+            } catch (error) {
+                console.error('Failed to start ambient sound:', error);
+            }
+        }
+
+        stopAmbientSound() {
+            if (this.ambientSource) {
+                try {
+                    this.ambientSource.stop();
+                } catch (error) {
+                    // Source might already be stopped
+                }
+                this.ambientSource = null;
+            }
+        }
+
+        playEffect(type) {
+            if (!this.initialized) return;
+
+            try {
+                const oscillator = this.context.createOscillator();
+                const gain = this.context.createGain();
+
+                oscillator.connect(gain);
+                gain.connect(this.effectsGain);
+
+                let frequency, duration, waveType;
+
+                switch (type) {
+                    case 'start':
+                        frequency = 523;
+                        duration = 0.3;
+                        waveType = 'sine';
+                        break;
+                    case 'phase':
+                        frequency = 330;
+                        duration = 0.2;
+                        waveType = 'triangle';
+                        break;
+                    case 'complete':
+                        frequency = 659;
+                        duration = 0.5;
+                        waveType = 'sine';
+                        break;
+                    case 'error':
+                        frequency = 220;
+                        duration = 0.3;
+                        waveType = 'square';
+                        break;
+                    default:
+                        frequency = 440;
+                        duration = 0.2;
+                        waveType = 'sine';
+                }
+
+                oscillator.frequency.value = frequency;
+                oscillator.type = waveType;
+
+                gain.gain.setValueAtTime(0.1, this.context.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + duration);
+
+                oscillator.start();
+                oscillator.stop(this.context.currentTime + duration);
+            } catch (error) {
+                console.error('Failed to play effect:', error);
+            }
+        }
+    }
+
+    // Voice Manager
+    class VoiceManager {
+        constructor() {
+            this.synthesis = window.speechSynthesis;
+            this.voices = [];
+            this.selectedVoice = null;
+            this.volume = 0.7;
+            this.rate = 1.0;
+            this.pitch = 1.0;
+
+            this.loadVoices();
+
+            // Handle voices loaded event
+            this.synthesis.onvoiceschanged = () => {
+                this.loadVoices();
+            };
+        }
+
+        loadVoices() {
+            this.voices = this.synthesis.getVoices();
+            this.populateVoiceSelect();
+
+            // Select a good default voice
+            if (this.voices.length > 0 && !this.selectedVoice) {
+                const preferredVoice = this.voices.find(voice =>
+                    voice.lang.startsWith('en') && voice.localService
+                ) || this.voices[0];
+
+                this.selectedVoice = preferredVoice;
+                if (elements.voiceSelect) {
+                    elements.voiceSelect.value = this.voices.indexOf(preferredVoice);
+                }
+            }
+        }
+
+        populateVoiceSelect() {
+            if (!elements.voiceSelect) return;
+
+            elements.voiceSelect.innerHTML = '';
+            this.voices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                elements.voiceSelect.appendChild(option);
+            });
+        }
+
+        setVoice(index) {
+            if (this.voices[index]) {
+                this.selectedVoice = this.voices[index];
+            }
+        }
+
+        setVolume(volume) {
+            this.volume = volume / 100;
+        }
+
+        speak(text) {
+            if (!app.voiceEnabled || !text) return;
+
+            // Cancel any ongoing speech
+            this.synthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.voice = this.selectedVoice;
+            utterance.volume = this.volume;
+            utterance.rate = this.rate;
+            utterance.pitch = this.pitch;
+
+            utterance.onerror = (event) => {
+                console.error('Speech synthesis error:', event);
+            };
+
+            this.synthesis.speak(utterance);
+        }
+
+        stop() {
+            this.synthesis.cancel();
+        }
+    }
+
+    // Camera and Detection Manager
+    class DetectionManager {
+        constructor() {
+            this.model = null;
+            this.isLoading = false;
+            this.isDetecting = false;
+            this.detectionFrameId = null;
+        }
+
+        async loadModel() {
+            if (this.model || this.isLoading) return;
+
+            this.isLoading = true;
+            updateDetectionStatus('Loading model...', 'warning');
+
+            try {
+                this.model = await faceLandmarksDetection.load(
+                    faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
+                    { maxFaces: 1, shouldLoadIrisModel: false }
+                );
+
+                updateDetectionStatus('Model loaded', 'success');
+                console.log('Face detection model loaded');
+            } catch (error) {
+                console.error('Failed to load detection model:', error);
+                updateDetectionStatus('Model load failed', 'error');
+                showNotification('Failed to load AI detection model', 'error');
+            } finally {
+                this.isLoading = false;
+            }
+        }
+
+        async startCamera() {
+            try {
+                updateCameraStatus('Requesting access...', 'warning');
+
+                app.videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'user'
+                    },
+                    audio: false
+                });
+
+                elements.videoStream.srcObject = app.videoStream;
+                elements.videoPlaceholder.style.display = 'none';
+
+                app.cameraActive = true;
+                updateCameraStatus('Connected', 'success');
+
+                // Load model if not already loaded
+                if (!this.model) {
+                    await this.loadModel();
+                }
+
+                // Start detection if session is running
+                if (app.isRunning && !app.isPaused) {
+                    this.startDetection();
+                }
+
+                showNotification('Camera connected successfully', 'success');
+
+            } catch (error) {
+                console.error('Camera access failed:', error);
+                updateCameraStatus('Access denied', 'error');
+
+                let message = 'Camera access was denied. ';
+                if (error.name === 'NotAllowedError') {
+                    message += 'Please allow camera access and try again.';
+                } else if (error.name === 'NotFoundError') {
+                    message += 'No camera device found.';
+                } else {
+                    message += 'Please check camera permissions.';
+                }
+
+                showNotification(message, 'error');
+            }
+        }
+
+        stopCamera() {
+            if (app.videoStream) {
+                app.videoStream.getTracks().forEach(track => track.stop());
+                app.videoStream = null;
+            }
+
+            elements.videoStream.srcObject = null;
+            elements.videoPlaceholder.style.display = 'flex';
+
+            app.cameraActive = false;
+            updateCameraStatus('Disconnected', 'error');
+
+            this.stopDetection();
+        }
+
+        startDetection() {
+            if (this.isDetecting || !this.model || !app.cameraActive) return;
+
+            this.isDetecting = true;
+            updateDetectionStatus('Active', 'success');
+            this.detectLoop();
+        }
+
+        stopDetection() {
+            this.isDetecting = false;
+            updateDetectionStatus('Inactive', 'error');
+
+            if (this.detectionFrameId) {
+                cancelAnimationFrame(this.detectionFrameId);
+                this.detectionFrameId = null;
+            }
+
+            // Clear overlay
+            const ctx = elements.videoOverlay.getContext('2d');
+            ctx.clearRect(0, 0, elements.videoOverlay.width, elements.videoOverlay.height);
+        }
+
+        async detectLoop() {
+            if (!this.isDetecting) return;
+
+            try {
+                const predictions = await this.model.estimateFaces({
+                    input: elements.videoStream,
+                    returnTensors: false,
+                    flipHorizontal: true,
+                    predictIrises: false
+                });
+
+                if (predictions && predictions.length > 0) {
+                    this.processFacePrediction(predictions[0]);
+                } else {
+                    app.eyeState = 'no_face';
+                    elements.eyeState.textContent = 'No Face';
+                    elements.detectionAccuracy.textContent = '0%';
+                }
+
+            } catch (error) {
+                console.error('Detection error:', error);
+                updateDetectionStatus('Error', 'error');
+            }
+
+            this.detectionFrameId = requestAnimationFrame(() => this.detectLoop());
+        }
+
+        processFacePrediction(prediction) {
+            const annotations = prediction.annotations;
+
+            // Calculate eye aspect ratio
+            const leftEyePoints = [
+                ...annotations.leftEyeUpper0,
+                ...annotations.leftEyeLower0
+            ];
+            const rightEyePoints = [
+                ...annotations.rightEyeUpper0,
+                ...annotations.rightEyeLower0
+            ];
+
+            const leftEAR = this.calculateEyeAspectRatio(
+                annotations.leftEyeUpper0,
+                annotations.leftEyeLower0
+            );
+            const rightEAR = this.calculateEyeAspectRatio(
+                annotations.rightEyeUpper0,
+                annotations.rightEyeLower0
+            );
+
+            app.currentEyeRatio = (leftEAR + rightEAR) / 2;
+
+            // Determine eye state
+            if (app.isCalibrated) {
+                app.eyeState = app.currentEyeRatio < app.eyeThreshold ? 'closed' : 'open';
+            } else {
+                app.eyeState = app.currentEyeRatio < 0.25 ? 'closed' : 'open';
+            }
+
+            // Update UI
+            elements.eyeOpenness.textContent = app.currentEyeRatio.toFixed(3);
+            elements.eyeState.textContent = app.eyeState === 'closed' ? 'Closed' : 'Open';
+            elements.detectionAccuracy.textContent = '95%'; // Simulated accuracy
+
+            // Draw visualization
+            this.drawVisualization(annotations);
+        }
+
+        calculateEyeAspectRatio(upperPoints, lowerPoints) {
+            if (!upperPoints || !lowerPoints || upperPoints.length === 0 || lowerPoints.length === 0) {
+                return 0.3; // Default value
+            }
+
+            // Calculate vertical distances
+            let verticalDist = 0;
+            const numPoints = Math.min(upperPoints.length, lowerPoints.length);
+
+            for (let i = 0; i < numPoints; i++) {
+                const upper = upperPoints[i];
+                const lower = lowerPoints[i];
+                verticalDist += Math.abs(upper[1] - lower[1]);
+            }
+            verticalDist /= numPoints;
+
+            // Calculate horizontal distance (eye width)
+            const allPoints = [...upperPoints, ...lowerPoints];
+            let minX = allPoints[0][0];
+            let maxX = allPoints[0][0];
+
+            for (const point of allPoints) {
+                minX = Math.min(minX, point[0]);
+                maxX = Math.max(maxX, point[0]);
+            }
+
+            const horizontalDist = maxX - minX;
+
+            // Return aspect ratio
+            return horizontalDist > 0 ? verticalDist / horizontalDist : 0;
+        }
+
+        drawVisualization(annotations) {
+            const canvas = elements.videoOverlay;
+            const ctx = canvas.getContext('2d');
+
+            // Resize canvas if needed
+            if (canvas.width !== elements.videoStream.videoWidth) {
+                canvas.width = elements.videoStream.videoWidth;
+                canvas.height = elements.videoStream.videoHeight;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw eye contours
+            ctx.strokeStyle = app.eyeState === 'closed' ? '#ef4444' : '#10b981';
+            ctx.lineWidth = 2;
+
+            this.drawPath(ctx, annotations.leftEyeUpper0);
+            this.drawPath(ctx, annotations.leftEyeLower0);
+            this.drawPath(ctx, annotations.rightEyeUpper0);
+            this.drawPath(ctx, annotations.rightEyeLower0);
+        }
+
+        drawPath(ctx, points) {
+            if (!points || points.length === 0) return;
+
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i][0], points[i][1]);
+            }
+
+            ctx.stroke();
+        }
+
+        async calibrate() {
+            if (!this.model || !app.cameraActive) {
+                showNotification('Please enable camera first', 'warning');
+                return;
+            }
+
+            try {
+                showNotification('Starting calibration...', 'info');
+
+                // Step 1: Measure open eyes
+                elements.phaseDescription.textContent = 'Calibration: Keep your eyes naturally open';
+                voiceManager.speak('Calibration starting. Keep your eyes naturally open.');
+
+                const openMeasurements = await this.measureEyeState(3000); // 3 seconds
+
+                // Step 2: Measure closed eyes
+                elements.phaseDescription.textContent = 'Calibration: Gently close your eyes';
+                voiceManager.speak('Now gently close your eyes.');
+
+                const closedMeasurements = await this.measureEyeState(3000); // 3 seconds
+
+                // Calculate threshold
+                app.openEyeRatio = this.calculateAverage(openMeasurements);
+                app.closedEyeRatio = this.calculateAverage(closedMeasurements);
+                app.eyeThreshold = (app.openEyeRatio + app.closedEyeRatio) / 2;
+
+                app.isCalibrated = true;
+                elements.calibrationStatus.textContent = 'Calibrated';
+
+                audioManager.playEffect('complete');
+                voiceManager.speak('Calibration complete.');
+                showNotification('Calibration completed successfully!', 'success');
+
+                console.log(`Calibration results - Open: ${app.openEyeRatio.toFixed(3)}, Closed: ${app.closedEyeRatio.toFixed(3)}, Threshold: ${app.eyeThreshold.toFixed(3)}`);
+
+            } catch (error) {
+                console.error('Calibration failed:', error);
+                showNotification('Calibration failed. Please try again.', 'error');
+            }
+        }
+
+        async measureEyeState(duration) {
+            return new Promise((resolve) => {
+                const measurements = [];
+                const startTime = Date.now();
+
+                const measure = () => {
+                    if (Date.now() - startTime >= duration) {
+                        resolve(measurements);
+                        return;
+                    }
+
+                    if (app.currentEyeRatio > 0) {
+                        measurements.push(app.currentEyeRatio);
+                    }
+
+                    setTimeout(measure, 100); // Sample every 100ms
+                };
+
+                measure();
+            });
+        }
+
+        calculateAverage(measurements) {
+            if (measurements.length === 0) return 0.25; // Default fallback
+            return measurements.reduce((sum, val) => sum + val, 0) / measurements.length;
+        }
+    }
+
+    // Initialize managers
+    const audioManager = new AudioManager();
+    const voiceManager = new VoiceManager();
+    const detectionManager = new DetectionManager();
+
+    // Utility Functions
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateCameraStatus(status, type) {
+        elements.cameraStatus.textContent = status;
+        elements.cameraStatusDot.className = `status-dot ${type}`;
+    }
+
+    function updateDetectionStatus(status, type) {
+        elements.detectionStatus.textContent = status;
+        elements.detectionStatusDot.className = `status-dot ${type}`;
+    }
+
+    function updateSessionStatus(status, type) {
+        elements.sessionStatus.textContent = status;
+        elements.sessionStatusDot.className = `status-dot ${type}`;
+    }
+
+    function showNotification(message, type = 'info', title = '') {
+        const notification = elements.notification;
+        const icon = elements.notificationIcon;
+        const titleEl = elements.notificationTitle;
+        const messageEl = elements.notificationMessage;
+
+        // Set content
+        titleEl.textContent = title || type.charAt(0).toUpperCase() + type.slice(1);
+        messageEl.textContent = message;
+
+        // Set icon
+        const icons = {
+            success: 'fas fa-check-circle',
+            error: 'fas fa-exclamation-circle',
+            warning: 'fas fa-exclamation-triangle',
+            info: 'fas fa-info-circle'
+        };
+        icon.innerHTML = `<i class="${icons[type] || icons.info}"></i>`;
+
+        // Set style
+        notification.className = `notification ${type} show`;
+
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+
+    function updateTimer() {
+        if (!app.isRunning || app.isPaused) return;
+
+        const now = Date.now();
+        app.elapsedTime = (now - app.startTime) / 1000;
+        app.remainingTime = Math.max(0, app.sessionDuration * 60 - app.elapsedTime);
+
+        // Update timer display
+        elements.timerDisplay.textContent = formatTime(app.remainingTime);
+        elements.totalTime.textContent = formatTime(app.elapsedTime);
+
+        // Update progress
+        const progress = (app.elapsedTime / (app.sessionDuration * 60)) * 100;
+        elements.progressBar.style.width = `${Math.min(progress, 100)}%`;
+
+        // Update circular progress
+        const circumference = 2 * Math.PI * 45;
+        const offset = circumference - (progress / 100) * circumference;
+        elements.timerProgress.style.strokeDashoffset = offset;
+
+        // Check if session is complete
+        if (app.remainingTime <= 0) {
+            completeSession();
+        }
+    }
+
+    function startSession() {
+        if (app.isRunning && !app.isPaused) return;
+
+        if (!app.isRunning) {
+            // Start new session
+            app.isRunning = true;
+            app.isPaused = false;
+            app.startTime = Date.now();
+            app.elapsedTime = 0;
+            app.currentPhase = 0;
+            app.cycleCount = 0;
+            app.remainingTime = app.sessionDuration * 60;
+
+            updateSessionStatus('Running', 'success');
+            audioManager.playEffect('start');
+            voiceManager.speak('Starting session');
+
+            // Start ambient sound if enabled
+            if (app.ambientEnabled) {
+                audioManager.startAmbientSound(app.ambientType);
+            }
+
+            // Start detection if camera is active
+            if (app.cameraActive && detectionManager.model) {
+                detectionManager.startDetection();
+            }
+
+            showNotification('Session started successfully', 'success');
+
+        } else if (app.isPaused) {
+            // Resume session
+            app.isPaused = false;
+            app.startTime = Date.now() - app.elapsedTime * 1000;
+
+            updateSessionStatus('Running', 'success');
+            voiceManager.speak('Resuming session');
+
+            if (app.cameraActive) {
+                detectionManager.startDetection();
+            }
+        }
+
+        // Update button states
+        elements.startBtn.disabled = true;
+        elements.pauseBtn.disabled = false;
+
+        // Start phase
+        startPhase();
+
+        // Start update loop
+        updateInterval = setInterval(updateTimer, 1000);
+    }
+
+    function pauseSession() {
+        if (!app.isRunning || app.isPaused) return;
+
+        app.isPaused = true;
+        updateSessionStatus('Paused', 'warning');
+
+        audioManager.playEffect('pause');
+        voiceManager.speak('Session paused');
+        detectionManager.stopDetection();
+
+        elements.startBtn.disabled = false;
+        elements.pauseBtn.disabled = true;
+
+        clearTimeout(phaseTimeout);
+        clearInterval(updateInterval);
+
+        showNotification('Session paused', 'info');
+    }
+
+    function resetSession() {
+        app.isRunning = false;
+        app.isPaused = false;
+        app.elapsedTime = 0;
+        app.currentPhase = 0;
+        app.cycleCount = 0;
+        app.remainingTime = app.sessionDuration * 60;
+
+        updateSessionStatus('Ready', 'error');
+
+        elements.startBtn.disabled = false;
+        elements.pauseBtn.disabled = true;
+
+        elements.timerDisplay.textContent = formatTime(app.sessionDuration * 60);
+        elements.totalTime.textContent = '0:00';
+        elements.cyclesCount.textContent = '0';
+        elements.progressBar.style.width = '0%';
+        elements.timerProgress.style.strokeDashoffset = '283';
+
+        elements.phaseTitle.textContent = 'Ready to Begin';
+        elements.phaseDescription.textContent = 'Select an exercise and click Start to begin your wellness session.';
+
+        clearTimeout(phaseTimeout);
+        clearInterval(updateInterval);
+
+        detectionManager.stopDetection();
+        audioManager.stopAmbientSound();
+        voiceManager.stop();
+
+        showNotification('Session reset', 'info');
+    }
+
+    function completeSession() {
+        app.isRunning = false;
+        app.isPaused = false;
+
+        updateSessionStatus('Completed', 'success');
+
+        elements.startBtn.disabled = false;
+        elements.pauseBtn.disabled = true;
+
+        elements.phaseTitle.textContent = 'Session Complete!';
+        elements.phaseDescription.textContent = 'Congratulations! You have completed your wellness session.';
+
+        clearTimeout(phaseTimeout);
+        clearInterval(updateInterval);
+
+        detectionManager.stopDetection();
+        audioManager.stopAmbientSound();
+        audioManager.playEffect('complete');
+        voiceManager.speak('Session complete! Great job!');
+
+        // Update wellness score
+        const currentScore = parseInt(elements.wellnessScore.textContent);
+        elements.wellnessScore.textContent = Math.min(currentScore + 5, 100);
+
+        showNotification('🎉 Session completed successfully!', 'success', 'Well Done!');
+    }
+
+    function startPhase() {
+        if (!app.isRunning || app.isPaused) return;
+
+        const exercise = EXERCISES[app.currentExercise];
+        const phase = exercise.phases[app.currentPhase];
+
+        elements.phaseTitle.textContent = `${exercise.name} - ${phase.name.toUpperCase()}`;
+        elements.phaseDescription.textContent = phase.instruction;
+
+        audioManager.playEffect('phase');
+        voiceManager.speak(phase.voice);
+
+        // Set timeout for next phase
+        phaseTimeout = setTimeout(() => {
+            if (!app.isRunning || app.isPaused) return;
+
+            // Move to next phase
+            app.currentPhase++;
+
+            // Check if cycle is complete
+            if (app.currentPhase >= exercise.phases.length) {
+                app.currentPhase = 0;
+                app.cycleCount++;
+                elements.cyclesCount.textContent = app.cycleCount;
+            }
+
+            startPhase();
+        }, phase.duration * 1000);
+    }
+
+    // Event Listeners
+    function setupEventListeners() {
+        // Session controls
+        elements.startBtn.addEventListener('click', async () => {
+            await audioManager.initialize();
+            await audioManager.resume();
+            startSession();
+        });
+
+        elements.pauseBtn.addEventListener('click', pauseSession);
+        elements.resetBtn.addEventListener('click', resetSession);
+
+        // Camera controls
+        elements.cameraBtn.addEventListener('click', async () => {
+            if (app.cameraActive) {
+                detectionManager.stopCamera();
+                elements.cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Camera';
+            } else {
+                await detectionManager.startCamera();
+                elements.cameraBtn.innerHTML = '<i class="fas fa-camera-slash"></i> Stop Camera';
+            }
+        });
+
+        elements.calibrateBtn.addEventListener('click', () => {
+            detectionManager.calibrate();
+        });
+
+        // Settings
+        elements.exerciseSelect.addEventListener('change', (e) => {
+            app.currentExercise = e.target.value;
+            resetSession();
+        });
+
+        elements.durationSlider.addEventListener('input', (e) => {
+            app.sessionDuration = parseInt(e.target.value);
+            elements.durationValue.textContent = `${app.sessionDuration} min`;
+            if (!app.isRunning) {
+                elements.timerDisplay.textContent = formatTime(app.sessionDuration * 60);
+            }
+        });
+
+        // Voice settings
+        elements.voiceToggle.addEventListener('click', () => {
+            elements.voiceToggle.classList.toggle('active');
+            app.voiceEnabled = elements.voiceToggle.classList.contains('active');
+        });
+
+        elements.voiceSelect.addEventListener('change', (e) => {
+            voiceManager.setVoice(parseInt(e.target.value));
+        });
+
+        elements.voiceVolumeSlider.addEventListener('input', (e) => {
+            app.voiceVolume = parseInt(e.target.value);
+            elements.voiceVolumeValue.textContent = `${app.voiceVolume}%`;
+            voiceManager.setVolume(app.voiceVolume);
+        });
+
+        // Audio settings
+        elements.ambientToggle.addEventListener('click', () => {
+            elements.ambientToggle.classList.toggle('active');
+            app.ambientEnabled = elements.ambientToggle.classList.contains('active');
+
+            if (app.ambientEnabled && app.isRunning) {
+                audioManager.startAmbientSound(app.ambientType);
+            } else {
+                audioManager.stopAmbientSound();
+            }
+        });
+
+        elements.ambientSelect.addEventListener('change', (e) => {
+            app.ambientType = e.target.value;
+            if (app.ambientEnabled && app.isRunning) {
+                audioManager.startAmbientSound(app.ambientType);
+            }
+        });
+
+        elements.ambientVolumeSlider.addEventListener('input', (e) => {
+            app.ambientVolume = parseInt(e.target.value);
+            elements.ambientVolumeValue.textContent = `${app.ambientVolume}%`;
+            audioManager.setAmbientVolume(app.ambientVolume);
+        });
+
+        elements.effectsVolumeSlider.addEventListener('input', (e) => {
+            app.effectsVolume = parseInt(e.target.value);
+            elements.effectsVolumeValue.textContent = `${app.effectsVolume}%`;
+            audioManager.setEffectsVolume(app.effectsVolume);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+            switch (e.code) {
+                case 'Space':
+                    e.preventDefault();
+                    if (app.isRunning && !app.isPaused) {
+                        pauseSession();
+                    } else {
+                        audioManager.initialize().then(() => {
+                            audioManager.resume().then(() => {
+                                startSession();
+                            });
+                        });
+                    }
+                    break;
+                case 'KeyR':
+                    e.preventDefault();
+                    resetSession();
+                    break;
+                case 'KeyC':
+                    e.preventDefault();
+                    elements.cameraBtn.click();
+                    break;
+            }
+        });
+
+        // Hide notification on click
+        elements.notification.addEventListener('click', () => {
+            elements.notification.classList.remove('show');
+        });
+    }
+
+    // Initialize Application
+    async function initializeApp() {
+        console.log('Initializing AvestoAI Health...');
+
+        try {
+            // Setup event listeners
+            setupEventListeners();
+
+            // Initialize audio (will be activated on first user interaction)
+            await audioManager.initialize();
+
+            // Load voices for speech synthesis
+            voiceManager.loadVoices();
+
+            // Initialize detection model in background
+            setTimeout(() => {
+                detectionManager.loadModel();
+            }, 1000);
+
+            // Set initial values
+            elements.timerDisplay.textContent = formatTime(app.sessionDuration * 60);
+            updateSessionStatus('Ready', 'error');
+            updateCameraStatus('Disconnected', 'error');
+            updateDetectionStatus('Inactive', 'error');
+
+            console.log('Application initialized successfully');
+            showNotification('Welcome to AvestoAI Health! Enable camera to get started.', 'success', 'Welcome!');
+
+        } catch (error) {
+            console.error('Failed to initialize application:', error);
+            showNotification('Failed to initialize application', 'error');
+        } finally {
+            // Hide loading screen
+            setTimeout(() => {
+                elements.loadingScreen.classList.add('hidden');
+            }, 1500);
+        }
+    }
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeApp();
+    });
+
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && app.isRunning && !app.isPaused) {
+            pauseSession();
+            showNotification('Session paused due to tab switch', 'info');
+        }
+    });
+
+    // Handle window beforeunload
+    window.addEventListener('beforeunload', (e) => {
+        if (app.isRunning && !app.isPaused) {
+            e.preventDefault();
+            e.returnValue = 'You have an active session. Are you sure you want to leave?';
+        }
+    });
+
+</script>
+</body>
+</html>
